@@ -1,0 +1,29 @@
+sample question1
+sample answer1
+
+sample question2
+sample answer2
+
+sample question3
+sample answer3
+
+sample question4
+sample answer4
+
+sample question5
+sample answer5
+
+sample question6
+sample answer6
+
+sample question7
+sample answer7
+
+sample question8
+sample answer8
+
+sample question9
+sample answer9
+
+sample question10
+sample answer10
