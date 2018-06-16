@@ -1,9 +1,44 @@
-NOT
-¬
+sample question1
+sample answer1
+ 
+sample question2
+sample answer2
+ 
+sample question3
+sample answer3
+ 
+sample question4
+sample answer4
 
-AND
-^
+sample question5
+sample answer5
 
-OR
-V
+sample question6
+sample answer6
 
+sample question7
+sample answer7
+
+sample question8
+sample answer8
+
+sample question9
+sample answer9
+
+sample question11
+sample answer11
+
+sample question12
+sample answer12
+
+sample question13
+sample answer13
+
+sample question14
+sample answer14
+
+sample question15
+sample answer15
+
+sample question16
+sample answer16

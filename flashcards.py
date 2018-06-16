@@ -58,6 +58,10 @@ def main(cards): # main flashcards window procedure
 			textvar.set("???")
 		format(main)
 
+	def goback(): # procedure for go back button
+		main.destroy() # destroy this window
+		menu() # start menu
+
 	main=Tk() # generate tkinter window
 	main.geometry("+500+300") # set position of window
 	main.title("Flashcards") # set title of window
@@ -82,6 +86,9 @@ def main(cards): # main flashcards window procedure
 			c=0
 			r+=1
 		format(lf) # set the labelframe colors
+
+	backb=Button(main,text="Go back",command=goback) # button to go back to start screen
+	backb.grid(columnspan=10,sticky="nesw") # grid back button
 
 	format(main) # set the main window colors
 	center(main) # center main window
