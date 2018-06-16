@@ -28,25 +28,63 @@ def generate(path): # function for generating a dictionary of flashcards from a 
 	except FileNotFoundError: # if the text file doesn't exist
 		return "error2"
 
+def format(master): # procedure for formatting windows and widgets easily
+	master.configure(bg=bgcolor) # master will be the window
+	for w in master.winfo_children(): # for every widget in the window
+		name=w.winfo_class() # get the type of widget (button, label, etc.)
+		if name=="Radiobutton" or name=="Button" or name=="Label" or name=="LabelFrame": # if its any of these three
+			w.configure(bg=bgcolor,fg=fgcolor) # set bg and fg colors
+		if name=="Frame": # if its a frame
+			w.configure(bg=bgcolor) # set the bg color
+		if name=="Button" or name=="Radiobutton": # if its a button or radiobuttons
+			w.configure(activebackground=bgcolor,activeforeground=fgcolor,cursor="hand2") # set active colors
+		if name=="Radiobutton": # if its a radiobutton
+			w.configure(selectcolor=bgcolor) # set the selector (white bit) color
+
+def center(win): # procedure for centering window
+    win.update_idletasks()
+    width = win.winfo_width()
+    height = win.winfo_height()
+    x = (win.winfo_screenwidth() // 2) - (width // 2)
+    y = (win.winfo_screenheight() // 2) - (height // 2)
+    win.geometry('{}x{}+{}+{}'.format(width, height, x, y))
+# thank you: https://stackoverflow.com/questions/3352918/how-to-center-a-window-on-the-screen-in-tkinter
+
 def main(cards): # main flashcards window procedure
 	def showhide(answer,textvar): # sub procedure to toggle show/hide on button click
 		if textvar.get()=="???": # if the answer is hidden, show it
 			textvar.set(answer)
 		else: # if the answer is shown, hide it
 			textvar.set("???")
+		format(main)
 
 	main=Tk() # generate tkinter window
+	main.geometry("+500+300") # set position of window
+	main.title("Flashcards") # set title of window
+	main.resizable(0,0) # prevent user from resizing window
 
+	r,c=0,0 # init row/column variables
 	for q in cards: # for question in cards
-		qLabel=Label(main,text=q) # create question labels
-		qLabel.grid() # grid question labels
+		lftext="Question {}".format(list(cards).index(q)+1) # question number label for labelframe
+		lf=LabelFrame(main,text=lftext) # create labelframe to contain current card
+		lf.grid(row=r,column=c,padx=5,pady=5,sticky="nesw") # grid the labelframe
+		qLabel=Label(lf,text=q,wraplength=200) # create question labels
+		qLabel.grid(sticky="nesw") # grid question labels
 		textvar=StringVar() # use answer as stringvar for ease when switching
 		textvar.set("???") # set answers to hidden at first
-		aLabel=Label(main,textvariable=textvar) # create answer labels
-		aLabel.grid() # grid answer labels
+		aLabel=Label(lf,textvariable=textvar,wraplength=200) # create answer labels
+		aLabel.grid(sticky="nesw") # grid answer labels
 		a=cards[q] # set current answer to a
-		sButton=Button(main,text="show/hide",command=lambda a=a,textvar=textvar:showhide(a,textvar)) # button to show/hide answers
-		sButton.grid() # grid show/hide button
+		sButton=Button(lf,text="show/hide",command=lambda a=a,textvar=textvar:showhide(a,textvar)) # button to show/hide answers
+		sButton.grid(sticky="nesw",padx=5,pady=5) # grid show/hide button
+		c+=1
+		if c>round(len(cards)/4):
+			c=0
+			r+=1
+		format(lf) # set the labelframe colors
+
+	format(main) # set the main window colors
+	center(main) # center main window
 
 	main.mainloop() # keep window loop running
 
@@ -87,21 +125,28 @@ def menu(): # initial menu procedure
 		if val==0: # if they picked 'show all'
 			pass # explicitly do nothing to avoid confusion. there are no extra options
 		elif val==1: # if they picked 'random selection'
-			l=Label(optionFrame,text="number of cards") # create a label asking how many to choose
+			l=Label(optionFrame,text="Number of cards to generate") # create a label asking how many to choose
 			l.grid() # grid label
 			e=Spinbox(optionFrame,from_=1,to=len(generate(path)),state="readonly") # create spinbox for int choice
 			e.grid() # grid spinbox
 		elif val==2: # if they picked 'pick own'
+			l=Label(optionFrame,text="Choose questions") # label instruction for user
+			l.grid(row=0,column=0)
 			cards=generate(path) # get all cards stored in cards
 			scrollbar=Scrollbar(optionFrame) # scroll bar for touch pad users :)
-			scrollbar.grid(row=0,column=1,sticky="ns") # grid scrollbar
+			scrollbar.grid(row=1,column=1,sticky="ns",rowspan=5) # grid scrollbar
 			lb=Listbox(optionFrame,yscrollcommand=scrollbar.set,selectmode=MULTIPLE) # listbox containing all card questions
-			lb.grid(row=0,column=0) # grid listbox
+			lb.grid(row=1,column=0,rowspan=5) # grid listbox
 			scrollbar.config(command=lb.yview) # map listbox's scroll to scrollbar
 			for q in cards: # for question in cards
 				lb.insert(END,q) # insert the question into the listbox
 
+		format(optionFrame) # call to window formatting procedure
+
 	root=Tk() # create root window
+	root.geometry("400x300+500+300") # set size and position of window
+	root.title("Flashcards") # set title of window
+	root.resizable(0,0) # prevent user from resizing window
 
 	test=generate(path) # try generating flashcards to make sure the file is valid
 	if test=="error": # if the text file is invalid show an error
@@ -111,21 +156,28 @@ def menu(): # initial menu procedure
 		error=messagebox.showerror("Error","Make sure there is a 'flashcards.txt' file in the same folder as this program")
 		root.destroy() # close the window
 	else:
-		modes=[("show all",0),("random selection",1),("pick own",2)] # user options for selecting cards
+		modes=[("Show all",0),("Random selection",1),("Pick own",2)] # user options for selecting cards
 		v=IntVar() # the user's choice is stored as an intvar
 		v.set(0) # set the default choice to 0 (show all)
+		r,c=0,0
 		for mode,value in modes: # for each mode
 			b = Radiobutton(root, text=mode,variable=v,value=value,command=update) # create a radio button widget
-			b.grid() # grid the radio buttons
+			b.grid(row=r,column=c,sticky="w",padx=10,pady=25) # grid the radio buttons
+			r+=1
 
 		optionFrame=Frame(root) # a frame to hold further options depending which mode the user chooses
-		optionFrame.grid() # grid the frame
+		optionFrame.grid(row=0,column=1,rowspan=4,padx=10,pady=10) # grid the frame
 		update() # function to refresh the option frame according to the choice made
 
-		sButton=Button(root,text="go",command=go) # submit 'go' button to affirm all choices
+		sButton=Button(root,text="Go",command=go) # submit 'go' button to affirm all choices
 		sButton.grid() # grid the go button
+
+	format(root) # call to window formatting procedure
+	center(root) # call to center window on screen
 
 	root.mainloop() # keep root window running
 
 path="flashcards.txt" # path to flashcards text
+bgcolor="#aea6ea" # global background color
+fgcolor="#000000" # global foreground color
 menu() # start
