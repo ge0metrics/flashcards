@@ -66,6 +66,7 @@ def main(cards): # main flashcards window procedure
 	main.geometry("+500+300") # set position of window
 	main.title("Flashcards") # set title of window
 	main.resizable(0,0) # prevent user from resizing window
+	main.iconbitmap("favicon.ico") # set icon
 
 	r,c=0,0 # init row/column variables
 	for q in cards: # for question in cards
@@ -154,6 +155,7 @@ def menu(): # initial menu procedure
 	root.geometry("400x300+500+300") # set size and position of window
 	root.title("Flashcards") # set title of window
 	root.resizable(0,0) # prevent user from resizing window
+	root.iconbitmap("favicon.ico") # set icon
 
 	test=generate(path) # try generating flashcards to make sure the file is valid
 	if test=="error": # if the text file is invalid show an error
